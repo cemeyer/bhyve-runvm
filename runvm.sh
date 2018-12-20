@@ -220,7 +220,7 @@ if [ $(id -u) -ne 0 ]; then
 	errmsg "This script must be executed with superuser privileges"
 fi
 
-if ! kldstat -n vmm > /dev/null 2>&1; then
+if ! kldstat -q -n vmm; then
 	errmsg "vmm.ko is not loaded"
 fi
 
