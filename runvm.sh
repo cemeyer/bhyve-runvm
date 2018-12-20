@@ -222,9 +222,23 @@ if [ $(id -u) -ne 0 ]; then
 	errmsg "This script must be executed with superuser privileges"
 fi
 
-if ! kldstat -q -n vmm; then
-	errmsg "vmm.ko is not loaded"
-fi
+check_module() {
+	if ! kldstat -q -m "$1"; then
+		echo "Module '$1' not loaded, attempting to load."
+		if ! kldload -q "$2"; then
+			errmsg "Failed to load '$1' ($2.ko)."
+		fi
+	fi
+}
+
+while read kmod kld; do
+    check_module "$kmod" "$kld"
+done << __EOM__
+vmm vmm
+virtio_mmio/vtnet if_vtnet
+if_bridge if_bridge
+if_tap if_tap
+__EOM__
 
 if [ $tap_total -eq 0 ] ; then
     tap_total=1
