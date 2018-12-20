@@ -99,12 +99,12 @@ usage() {
 	echo "       -v: Wait for VNC client connection before booting VM"
 	echo "       -w: ignore unimplemented MSRs"
 	if [ -n "$msg" ]; then
-	    echo ""
-	    echo "*** $msg"
+		echo ""
+		echo "*** $msg"
 	fi
 	if [ $(id -u) -ne 0 ]; then
-	    echo ""
-	    echo "*** Must run as superuser"
+		echo ""
+		echo "*** Must run as superuser"
 	fi
 	exit 1
 }
