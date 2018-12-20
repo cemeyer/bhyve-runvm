@@ -49,6 +49,7 @@ DEFAULT_VNCSIZE="w=1024,h=768"
 
 errmsg() {
 	echo "*** $1"
+	exit 1
 }
 
 usage() {
@@ -95,21 +96,16 @@ usage() {
 	echo "       -u: RTC keeps UTC time"
 	echo "       -v: Wait for VNC client connection before booting VM"
 	echo "       -w: ignore unimplemented MSRs"
-	echo ""
-	[ -n "$msg" ] && errmsg "$msg"
+	if [ -n "$msg" ]; then
+	    echo ""
+	    echo "*** $msg"
+	fi
+	if [ $(id -u) -ne 0 ]; then
+	    echo ""
+	    echo "*** Must run as superuser"
+	fi
 	exit 1
 }
-
-if [ `id -u` -ne 0 ]; then
-	errmsg "This script must be executed with superuser privileges"
-	exit 1
-fi
-
-kldstat -n vmm > /dev/null 2>&1 
-if [ $? -ne 0 ]; then
-	errmsg "vmm.ko is not loaded"
-	exit 1
-fi
 
 force_install=0
 isofile=${DEFAULT_ISOFILE}
@@ -219,6 +215,14 @@ while getopts aAc:C:d:e:Ef:F:g:hH:iI:l:L:m:n:p:P:t:Tuvw c ; do
 		;;
 	esac
 done
+
+if [ $(id -u) -ne 0 ]; then
+	errmsg "This script must be executed with superuser privileges"
+fi
+
+if ! kldstat -n vmm > /dev/null 2>&1; then
+	errmsg "vmm.ko is not loaded"
+fi
 
 if [ $tap_total -eq 0 ] ; then
     tap_total=1
