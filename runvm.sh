@@ -48,7 +48,9 @@ DEFAULT_VNCPORT=5900
 DEFAULT_VNCSIZE="w=1024,h=768"
 
 errmsg() {
-	echo "*** $1"
+	local fmt="$1"
+	shift
+	printf "*** ${fmt}\n" "$@"
 	exit 1
 }
 
