@@ -57,10 +57,9 @@ errmsg() {
 usage() {
 	local msg=$1
 
-	echo "Usage: vmrun.sh [-aAEhiTv] [-c <CPUs>] [-C <console>]" \
-	    "[-d <disk file>]"
-	echo "                [-e <name=value>] [-f <path of firmware>]" \
-	    "[-F <size>]"
+	echo "Usage: vmrun.sh [-aAEhiTv] [-C <console>] [-d <disk file>]"
+	echo "                [-c <[[cpus=]n][,sockets=n][,cores=n][,threads=n]"
+	echo "                [-e <name=value>] [-f <path of firmware>] [-F <size>]"
 	echo "                [-g <gdbport> ] [-H <directory>]"
 	echo "                [-I <location of installation iso>] [-l <loader>]"
 	echo "                [-L <VNC IP for UEFI framebuffer>]"
@@ -70,7 +69,7 @@ usage() {
 	echo "       -h: display this help message"
 	echo "       -a: force memory mapped local APIC access"
 	echo "       -A: use AHCI disk emulation instead of ${DEFAULT_DISK}"
-	echo "       -c: number of virtual cpus (default: ${DEFAULT_CPUS})"
+	echo "       -c: virtual cpu topology string (default: ${DEFAULT_CPUS}) (see bhyve(8))"
 	echo "       -C: console device (default: ${DEFAULT_CONSOLE})"
 	echo "       -d: virtio diskdev file (default: ${DEFAULT_VIRTIO_DISK})"
 	echo "       -e: set FreeBSD loader environment variable"
