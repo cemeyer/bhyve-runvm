@@ -64,8 +64,7 @@ usage() {
 	echo "                [-g <gdbport> ] [-H <directory>]"
 	echo "                [-I <location of installation iso>] [-l <loader>]"
 	echo "                [-L <VNC IP for UEFI framebuffer>]"
-	echo "                [-m <memsize>]" \
-	    "[-n <network adapter emulation type>]"
+	echo "                [-m <memsize>] [-n <network adapter emulation type>]"
 	echo "                [-P <port>] [-t <tapdev>] <vmname>"
 	echo ""
 	echo "       -h: display this help message"
@@ -77,21 +76,16 @@ usage() {
 	echo "       -e: set FreeBSD loader environment variable"
 	echo "       -E: Use UEFI mode"
 	echo "       -f: Use a specific UEFI firmware"
-	echo "       -F: Use a custom UEFI GOP framebuffer size" \
-	    "(default: ${DEFAULT_VNCSIZE}"
+	echo "       -F: Use a custom UEFI GOP framebuffer size (default: ${DEFAULT_VNCSIZE}"
 	echo "       -g: listen for connection from kgdb at <gdbport>"
 	echo "       -H: host filesystem to export to the loader"
 	echo "       -i: force boot of the Installation CDROM image"
-	echo "       -I: Installation CDROM image location" \
-	    "(default: ${DEFAULT_ISOFILE})"
+	echo "       -I: Installation CDROM image location (default: ${DEFAULT_ISOFILE})"
 	echo "       -l: the OS loader to use (default: /boot/userboot.so)"
-	echo "       -L: IP address for UEFI GOP VNC server" \
-	    "(default: ${DEFAULT_VNCHOST}"
+	echo "       -L: IP address for UEFI GOP VNC server (default: ${DEFAULT_VNCHOST}"
 	echo "       -m: memory size (default: ${DEFAULT_MEMSIZE})"
-	echo "       -n: network adapter emulation type" \
-	    "(default: ${DEFAULT_NIC})"
-	echo "       -p: pass-through a host PCI device at bus/slot/func" \
-	    "(e.g. 10/0/0)"
+	echo "       -n: network adapter emulation type (default: ${DEFAULT_NIC})"
+	echo "       -p: pass-through a host PCI device at bus/slot/func (e.g. 10/0/0)"
 	echo "       -P: UEFI GOP VNC port (default: ${DEFAULT_VNCPORT})"
 	echo "       -t: tap device for virtio-net (default: $DEFAULT_TAPDEV)"
 	echo "       -T: Enable tablet device (for UEFI GOP)"
