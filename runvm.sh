@@ -230,7 +230,7 @@ done << __EOM__
 vmm vmm
 virtio_mmio/vtnet if_vtnet
 if_bridge if_bridge
-if_tap if_tap
+if_tuntap if_tuntap
 __EOM__
 
 if [ $tap_total -eq 0 ] ; then
