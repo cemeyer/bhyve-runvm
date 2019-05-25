@@ -343,7 +343,7 @@ while [ 1 ]; do
 	#
 	# Build up args for additional tap and disk devices now.
 	#
-	nextslot=2  # slot 0 is hostbridge, slot 1 is lpc
+	nextslot=3  # Reserve slot 0 for hostbridge, 1 for lpc, and 2 for virtio-rnd.
 	devargs=""  # accumulate disk/tap args here
 	i=0
 	while [ $i -lt $tap_total ] ; do
@@ -383,6 +383,7 @@ while [ 1 ]; do
 		-g ${gdbport}						\
 		-s 0:0,hostbridge					\
 		-s 1:0,lpc						\
+		-s 2:0,virtio-rnd					\
 		${efiargs}						\
 		${devargs}						\
 		-l com1,${console}					\
