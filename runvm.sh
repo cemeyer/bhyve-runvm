@@ -57,7 +57,7 @@ errmsg() {
 usage() {
 	local msg=$1
 
-	echo "Usage: vmrun.sh [-aAEhiTv] [-C <console>] [-d <disk file>]"
+	echo "Usage: vmrun.sh [-aAEGhiTv] [-C <console>] [-d <disk file>]"
 	echo "                [-c <[[cpus=]n][,sockets=n][,cores=n][,threads=n]"
 	echo "                [-e <name=value>] [-f <path of firmware>] [-F <size>]"
 	echo "                [-g <gdbport> ] [-H <directory>]"
@@ -76,7 +76,8 @@ usage() {
 	echo "       -E: Use UEFI mode"
 	echo "       -f: Use a specific UEFI firmware"
 	echo "       -F: Use a custom UEFI GOP framebuffer size (default: ${DEFAULT_VNCSIZE}"
-	echo "       -g: listen for connection from kgdb at <gdbport>"
+	echo "       -g: listen for connection from kgdb at <gdbport> (bhyve)"
+	echo "       -G: create nmdm channel for kgdb at /dev/nmdm<vmname>2A (kernel gdb stub)"
 	echo "       -H: host filesystem to export to the loader"
 	echo "       -i: force boot of the Installation CDROM image"
 	echo "       -I: Installation CDROM image location (default: ${DEFAULT_ISOFILE})"
@@ -111,6 +112,7 @@ nic=${DEFAULT_NIC}
 tap_total=0
 disk_total=0
 disk_emulation=${DEFAULT_DISK}
+debug_nmdm=0
 gdbport=0
 loader_opt=""
 bhyverun_opt="-H -A -P"
@@ -125,7 +127,7 @@ vncport=${DEFAULT_VNCPORT}
 vncsize=${DEFAULT_VNCSIZE}
 tablet=""
 
-while getopts aAc:C:d:e:Ef:F:g:hH:iI:l:L:m:n:p:P:t:Tuvw c ; do
+while getopts aAc:C:d:e:Ef:F:g:GhH:iI:l:L:m:n:p:P:t:Tuvw c ; do
 	case $c in
 	a)
 		bhyverun_opt="${bhyverun_opt} -a"
@@ -157,6 +159,12 @@ while getopts aAc:C:d:e:Ef:F:g:hH:iI:l:L:m:n:p:P:t:Tuvw c ; do
 		;;
 	F)
 		vncsize="${OPTARG}"
+		;;
+	G)
+		# Set up NMDM channel for gdb stub.
+		# Guest needs hint.uart.1.flags=0x80 in device.hints.
+		# To debug host-side, 'kgdb kernel -ex "target remote /dev/nmdm[vmname]2A"'
+		debug_nmdm=1
 		;;
 	g)	
 		gdbport=${OPTARG}
@@ -232,6 +240,10 @@ virtio_mmio/vtnet if_vtnet
 if_bridge if_bridge
 if_tuntap if_tuntap
 __EOM__
+
+if [ $debug_nmdm -eq 1 ] ; then
+    check_module nmdm nmdm
+fi
 
 if [ $tap_total -eq 0 ] ; then
     tap_total=1
@@ -379,6 +391,11 @@ while [ 1 ]; do
 		efiargs="${efiargs} ${tablet}"
 	fi
 
+	nmdmargs=""
+	if [ $debug_nmdm -eq 1 ] ; then
+	    nmdmargs="-l com2,/dev/nmdm${vmname}2B"
+	fi
+
 	${FBSDRUN} -c ${cpus} -m ${memsize} ${bhyverun_opt}		\
 		-g ${gdbport}						\
 		-s 0:0,hostbridge					\
@@ -387,6 +404,7 @@ while [ 1 ]; do
 		${efiargs}						\
 		${devargs}						\
 		-l com1,${console}					\
+		${nmdmargs}						\
 		${installer_opt}					\
 		${vmname}
 
