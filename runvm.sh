@@ -421,9 +421,10 @@ while [ 1 ]; do
 	fi
 done
 
+stty sane
 
 case $bhyve_exit in
-	0|1|2)
+	0|1|2|3|4|5)
 		# Cleanup /dev/vmm entry when bhyve did not exit
 		# due to an error.
 		${BHYVECTL} --vm=${vmname} --destroy > /dev/null 2>&1
